@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SleepTimer UI Mockup</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+
+  h1 {
+    font-size: 14px;
+    font-weight: 500;
+    color: #888;
+    margin-bottom: 32px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .scene {
+    display: flex;
+    gap: 60px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .scene-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .scene-label {
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Menu Bar ── */
+  .menubar {
+    width: 320px;
+    height: 28px;
+    background: linear-gradient(180deg, #3a3a3c, #2c2c2e);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 12px;
+    gap: 16px;
+    font-size: 13px;
+    color: #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+
+  .menubar-icon {
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .menubar-icon:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  .menubar-icon.active {
+    background: rgba(255,255,255,0.15);
+  }
+
+  .menubar-timer-text {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  .menubar-time {
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  /* ── Popover Arrow ── */
+  .popover-arrow {
+    width: 16px;
+    height: 8px;
+    position: relative;
+  }
+
+  .popover-arrow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #2c2c2e;
+  }
+
+  /* ── Popover Window ── */
+  .popover {
+    width: 220px;
+    background: linear-gradient(180deg, #2c2c2e, #1c1c1e);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+
+  .popover-header {
+    padding: 16px 16px 12px;
+    text-align: center;
+  }
+
+  .popover-header h2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+  }
+
+  .popover-header .subtitle {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* ── Timer Buttons Grid ── */
+  .timer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 0 16px;
+  }
+
+  .timer-btn {
+    height: 48px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    color: #e0e0e0;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+  }
+
+  .timer-btn:hover {
+    background: rgba(120, 130, 255, 0.2);
+    color: #a5adff;
+  }
+
+  .timer-btn:active {
+    background: rgba(120, 130, 255, 0.3);
+    transform: scale(0.97);
+  }
+
+  .timer-btn .value {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .timer-btn .unit {
+    font-size: 10px;
+    font-weight: 400;
+    color: #888;
+  }
+
+  .timer-btn:hover .unit {
+    color: #a5adff;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 12px 16px;
+  }
+
+  /* ── Quit Button ── */
+  .quit-btn {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 0 16px 16px;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #666;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .quit-btn:hover {
+    background: rgba(255, 80, 80, 0.12);
+    color: #ff6b6b;
+  }
+
+  /* ── Active Timer State ── */
+  .timer-active-display {
+    padding: 8px 16px 4px;
+    text-align: center;
+  }
+
+  .timer-active-display .label {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 8px;
+  }
+
+  .timer-active-display .countdown {
+    font-size: 40px;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    color: #a5adff;
+    letter-spacing: 2px;
+    line-height: 1.2;
+  }
+
+  .timer-active-display .original {
+    font-size: 11px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  /* ── Progress Ring ── */
+  .progress-container {
+    display: flex;
+    justify-content: center;
+    padding: 16px 0 4px;
+  }
+
+  .progress-ring {
+    width: 100px;
+    height: 100px;
+    position: relative;
+  }
+
+  .progress-ring svg {
+    transform: rotate(-90deg);
+  }
+
+  .progress-ring .bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.06);
+    stroke-width: 4;
+  }
+
+  .progress-ring .fg {
+    fill: none;
+    stroke: #7882ff;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 1s linear;
+  }
+
+  .progress-ring .time-inside {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .progress-ring .time-inside .countdown-sm {
+    font-size: 22px;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    color: #e0e0e0;
+    letter-spacing: 1px;
+  }
+
+  .progress-ring .time-inside .unit-sm {
+    font-size: 10px;
+    color: #666;
+  }
+
+  /* ── Cancel Button ── */
+  .cancel-btn {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 4px 16px 4px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 80, 80, 0.1);
+    color: #ff6b6b;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .cancel-btn:hover {
+    background: rgba(255, 80, 80, 0.2);
+  }
+
+  /* ── Interactive demo ── */
+  .demo-section {
+    margin-top: 60px;
+    text-align: center;
+  }
+
+  .demo-section h1 {
+    margin-bottom: 20px;
+  }
+
+  .demo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .demo-menubar {
+    width: 400px;
+  }
+
+  .demo-popover-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 400px;
+    padding-right: 28px;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Static Mockups ===== -->
+<h1>SleepTimer — UI Mockup</h1>
+
+<div class="scene">
+
+  <!-- State 1: Idle -->
+  <div class="scene-item">
+    <div class="scene-label">タイマー未設定</div>
+    <div class="menubar">
+      <span class="menubar-time">12:34</span>
+      <span class="menubar-icon">🌙</span>
+    </div>
+    <div class="popover-arrow" style="margin-right: 16px; align-self: flex-end;"></div>
+    <div class="popover">
+      <div class="popover-header">
+        <h2>Sleep Timer</h2>
+        <div class="subtitle">スリープまでの時間を選択</div>
+      </div>
+      <div class="timer-grid">
+        <button class="timer-btn">
+          <span class="value">15</span>
+          <span class="unit">min</span>
+        </button>
+        <button class="timer-btn">
+          <span class="value">30</span>
+          <span class="unit">min</span>
+        </button>
+        <button class="timer-btn">
+          <span class="value">1</span>
+          <span class="unit">hour</span>
+        </button>
+        <button class="timer-btn">
+          <span class="value">2</span>
+          <span class="unit">hours</span>
+        </button>
+      </div>
+      <div class="divider"></div>
+      <button class="quit-btn">Quit</button>
+    </div>
+  </div>
+
+  <!-- State 2: Timer Active -->
+  <div class="scene-item">
+    <div class="scene-label">タイマー動作中</div>
+    <div class="menubar">
+      <span class="menubar-time">12:34</span>
+      <span class="menubar-icon active">⏱ <span class="menubar-timer-text">14:32</span></span>
+    </div>
+    <div class="popover-arrow" style="margin-right: 16px; align-self: flex-end;"></div>
+    <div class="popover">
+      <div class="popover-header">
+        <h2>Sleep Timer</h2>
+        <div class="subtitle">スリープまで</div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-ring">
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle class="bg" cx="50" cy="50" r="45"/>
+            <circle class="fg" cx="50" cy="50" r="45"/>
+          </svg>
+          <div class="time-inside">
+            <div class="countdown-sm">14:32</div>
+            <div class="unit-sm">/ 15 min</div>
+          </div>
+        </div>
+      </div>
+      <button class="cancel-btn">Cancel</button>
+      <div class="divider"></div>
+      <button class="quit-btn">Quit</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== Interactive Demo ===== -->
+<div class="demo-section">
+  <h1>Interactive Demo</h1>
+  <div class="demo-container">
+    <div class="menubar demo-menubar">
+      <span class="menubar-time">12:34</span>
+      <span class="menubar-icon" id="demo-icon" onclick="togglePopover()">🌙</span>
+    </div>
+    <div class="demo-popover-wrapper">
+      <div class="popover-arrow hidden" id="demo-arrow"></div>
+      <div class="popover hidden" id="demo-popover">
+        <div class="popover-header">
+          <h2>Sleep Timer</h2>
+          <div class="subtitle" id="demo-subtitle">スリープまでの時間を選択</div>
+        </div>
+        <div id="demo-idle">
+          <div class="timer-grid">
+            <button class="timer-btn" onclick="startTimer(15)">
+              <span class="value">15</span>
+              <span class="unit">min</span>
+            </button>
+            <button class="timer-btn" onclick="startTimer(30)">
+              <span class="value">30</span>
+              <span class="unit">min</span>
+            </button>
+            <button class="timer-btn" onclick="startTimer(60)">
+              <span class="value">1</span>
+              <span class="unit">hour</span>
+            </button>
+            <button class="timer-btn" onclick="startTimer(120)">
+              <span class="value">2</span>
+              <span class="unit">hours</span>
+            </button>
+          </div>
+        </div>
+        <div id="demo-active" class="hidden">
+          <div class="progress-container">
+            <div class="progress-ring">
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle class="bg" cx="50" cy="50" r="45"/>
+                <circle class="fg" cx="50" cy="50" r="45" id="demo-ring"/>
+              </svg>
+              <div class="time-inside">
+                <div class="countdown-sm" id="demo-countdown">00:00</div>
+                <div class="unit-sm" id="demo-original"></div>
+              </div>
+            </div>
+          </div>
+          <button class="cancel-btn" onclick="cancelTimer()">Cancel</button>
+        </div>
+        <div class="divider"></div>
+        <button class="quit-btn" onclick="togglePopover()">Quit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let popoverOpen = false;
+  let timerInterval = null;
+  let remainingSeconds = 0;
+  let totalSeconds = 0;
+
+  const circumference = 2 * Math.PI * 45; // ~283
+
+  function togglePopover() {
+    popoverOpen = !popoverOpen;
+    document.getElementById('demo-popover').classList.toggle('hidden', !popoverOpen);
+    document.getElementById('demo-arrow').classList.toggle('hidden', !popoverOpen);
+  }
+
+  function startTimer(minutes) {
+    totalSeconds = minutes * 60;
+
+    // Demo: compress time (1 real second = 1 minute) for quick preview
+    remainingSeconds = minutes;
+
+    document.getElementById('demo-idle').classList.add('hidden');
+    document.getElementById('demo-active').classList.remove('hidden');
+    document.getElementById('demo-subtitle').textContent = 'スリープまで';
+
+    const label = minutes >= 60 ? `${minutes / 60} hour${minutes > 60 ? 's' : ''}` : `${minutes} min`;
+    document.getElementById('demo-original').textContent = `/ ${label}`;
+    document.getElementById('demo-icon').innerHTML = `⏱ <span class="menubar-timer-text" id="demo-menubar-time"></span>`;
+    document.getElementById('demo-icon').classList.add('active');
+
+    updateDisplay();
+
+    timerInterval = setInterval(() => {
+      remainingSeconds--;
+      if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        alert('💤 Macがスリープします');
+        resetTimer();
+        return;
+      }
+      updateDisplay();
+    }, 1000);
+  }
+
+  function updateDisplay() {
+    // Display as mm:ss for the demo (each second = 1 minute of real timer)
+    const displayMin = Math.floor(remainingSeconds / 1);
+    const mm = String(Math.floor(remainingSeconds * 60 / totalSeconds * (totalSeconds / 60))).padStart(2, '0');
+    const ss = String(0).padStart(2, '0');
+
+    const realMM = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+    const realSS = String(remainingSeconds % 60).padStart(2, '0');
+    const displayText = `${realMM}:${realSS}`;
+
+    document.getElementById('demo-countdown').textContent = displayText;
+
+    const menubarTime = document.getElementById('demo-menubar-time');
+    if (menubarTime) menubarTime.textContent = displayText;
+
+    // Progress ring
+    const progress = remainingSeconds / (totalSeconds / 60);
+    const offset = circumference * (1 - progress);
+    document.getElementById('demo-ring').style.strokeDasharray = circumference;
+    document.getElementById('demo-ring').style.strokeDashoffset = offset;
+  }
+
+  function cancelTimer() {
+    clearInterval(timerInterval);
+    resetTimer();
+  }
+
+  function resetTimer() {
+    document.getElementById('demo-idle').classList.remove('hidden');
+    document.getElementById('demo-active').classList.add('hidden');
+    document.getElementById('demo-subtitle').textContent = 'スリープまでの時間を選択';
+    document.getElementById('demo-icon').innerHTML = '🌙';
+    document.getElementById('demo-icon').classList.remove('active');
+    remainingSeconds = 0;
+    totalSeconds = 0;
+  }
+</script>
+
+</body>
+</html>
